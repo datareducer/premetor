@@ -3,13 +3,13 @@
 library(data.table)
 library(stringi)
 
-files <- list.files("/home/sull/1c_logs_test", full.names = TRUE, recursive = TRUE)
+files <- list.files("D:/logs_", full.names = TRUE, recursive = TRUE)
 
 ib_name <- "erpwork"
 
 calls_dt <- rbindlist(
   lapply(files, function(f) {
-    lines <- readLines(f)
+    lines <- readLines(f, encoding="UTF-8")
     matches <- stri_subset(lines, regex = paste("^.*CALL.*p:processName=", ib_name, ".*Context=.*", sep=''))
     data.table(
       stri_match_first(
