@@ -8,7 +8,7 @@ files <- list.files(path = "D:/logs_/calls", pattern = ".*\\.log$", full.names =
 
 ib_name <- "erp"
 
-call_regex <- paste("^.*CALL.*p:processName=", ib_name, ".*Context=.*", sep='')
+call_regex <- paste("^.*CALL.*p:processName=", ib_name, ",.*Context=.*", sep='')
 context_regex <- "^.{13}(\\d*(?=,)).*((?<=Context=).*?(?=,)){1}"
 
 calls_dt <- rbindlist(
