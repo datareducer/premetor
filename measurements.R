@@ -61,15 +61,13 @@ meas1 <- meas1[, ':='( count = .N ), by = name]
 meas1 <- meas1[which(count > 50)]
 
 pl1 <- ggplot(meas1, aes(x=tSaveUTC, y=value, group=name, colour=name)) +
-       geom_point() +
+       geom_point(size=1) +
        scale_x_datetime(breaks=date_breaks("1 hour"), labels=date_format("%H:%M",  tz="Europe/Moscow")) +
-       geom_smooth(span = 0.1, method="loess", show.legend=FALSE, method.args = list(degree=1), level=0.6) +
-  
+       geom_smooth(span = 0.1, method="loess", show.legend=FALSE, method.args=list(degree=1), level=0.6, size=0.8, alpha=0.2) +
        theme(legend.title = element_text(size=11, color = "salmon", face="bold"),
           legend.justification=c(0, 1), 
           legend.position=c(0, 1),  
           legend.background = element_blank()) +
-  
        labs(title = "Время выполения ключевых операций в течение 21.08.2019", x = "", y = "Время выполнения", color = "Ключевые операции") 
       
 pl1
