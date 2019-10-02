@@ -6,8 +6,9 @@ library(ggplot2)
 library(scales)
 library(xlsx)
 
-files <- list.files(path = "D:/logs_/sesn", pattern = ".*\\.log$", full.names = TRUE, recursive = TRUE)
+files <- list.files(path = "D:/logs_/sesn_", pattern = ".*\\.log$", full.names = TRUE, recursive = TRUE)
 
+# XXX Appl=1CV8C - это только тонкий клиент
 sesn_regex <- "^.*SESN.*(Func=Start|Func=Finish).*Appl=1CV8C.*"
 func_regex <- "^(\\d{2}:\\d{2}).*((?<=Func=).*?(?=,)).*((?<=IB=).*?(?=,))"
 
@@ -16,12 +17,16 @@ sesn_dt <- rbindlist(
     lines <- readLines(file, encoding="UTF-8")
     matches <- stri_subset(lines, regex = sesn_regex)
     dt <- data.table(stri_match_first(matches, regex = func_regex)[,c(2,3,4)])
-    dt$date <- paste(stri_extract_first(file, regex = "\\d{8}(?=\\.log)"), dt$V1, sep="")
-    dt$date <- as.POSIXct(dt$date, tryFormats = c("%y%m%d%H%M:%OS"))
-    dt
+    if (ncol(dt) == 3) {
+      dt$date <- paste(stri_extract_first(file, regex = "\\d{8}(?=\\.log)"), dt$V1, sep="")
+      dt$date <- as.POSIXct(dt$date, tryFormats = c("%y%m%d%H%M:%OS"))
+    } 
+    return(dt)
   }),
   fill=TRUE
 )
+
+sesn_dt <- sesn_dt[complete.cases(sesn_dt), ]
 
 sesn_dt[, V1:=NULL]
 colnames(sesn_dt) <- c("func", "ib", "date")
@@ -46,7 +51,7 @@ sesn_f <- function(ib, func) {
    return(num)
 }
 
-sesn_dt <- sesn_dt[which(date >= as.POSIXct("2019-09-30 00:00") & date <= as.POSIXct("2019-09-30 23:59"))]
+sesn_dt <- sesn_dt[which(date >= as.POSIXct("2019-10-02 08:45") & date <= as.POSIXct("2019-10-02 23:59"))]
 
 sesn_dt <- sesn_dt[order(date),] 
 
@@ -64,7 +69,8 @@ p <- ggplot() +
   geom_line(sesn_dt, mapping = aes(x=date, y=sesn, group=ib, colour=ib)) +
   geom_line(sesn_dt, mapping = aes(x=date, y=total), size=1) +
   scale_x_datetime(breaks=date_breaks("1 hour"), labels=date_format("%H:%M",  tz="Europe/Moscow")) +
-  labs(title = "График изменения количества сеансов за 30.09.2019", y = "Количество сеансов", x = NULL, color="ИБ")
+  scale_y_continuous(limits = c(0, 200), breaks = seq(0, 200, by = 20)) +
+  labs(title = "График изменения количества сеансов на рабочем сервере 1C за 02.10.2019", y = "Количество сеансов", x = NULL, color="База")
   
 print(p)
 
