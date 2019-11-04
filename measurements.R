@@ -85,12 +85,13 @@ meas2$Period[meas2$tSaveUTC > as.POSIXct("2019-08-21") & meas2$tSaveUTC < as.POS
 
 means <- ddply(meas2, c("Period", "name"), summarise, grp.mean=mean(value))
 
-pl2 <- ggplot(meas2, aes(x=value, color=Period, fill=Period)) +
+pl2 <- ggplot(meas2, aes(x=value, colour=Period, fill=Period)) +
        geom_density(adjust=0.8, alpha=0.2)+
-       geom_vline(data=means, aes(xintercept=grp.mean, color=Period), linetype="dashed") +
+       geom_vline(data=means, aes(xintercept=grp.mean, colour=Period), linetype="dashed") +
        facet_wrap(facets = ~name, labeller = label_wrap_gen(width=40)) + 
        xlim(0,40) +
-       labs(title="Сравнение времени выполнения ключевых операций за два периода", x="Время выполнения", y = "Плотность распределения") 
+       labs(title="Сравнение времени выполнения ключевых операций за два периода", x="Время выполнения", y = "Плотность распределения", color="Период") +       
+       scale_fill_discrete(guide=FALSE) # иначе легенда дублируется
 
 pl2
 
